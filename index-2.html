@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="NovaCart - Shop quality products online.">
+<title>NovaCart | Online Store</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--muted:#6b7280;--line:#e5e7eb;--bg:#f8fafc;--white:#fff;--accent:#111827;--green:#16a34a}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111827}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+a{text-decoration:none;color:inherit}
+.container{width:min(1180px,92%);margin:auto}
+
+/* Header */
+.topbar{background:#111827;color:#fff;font-size:13px;text-align:center;padding:8px}
+header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line)}
+.nav{height:70px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;white-space:nowrap}
+.logo-mark{width:40px;height:40px;border-radius:12px;background:#111827;color:#fff;display:grid;place-items:center;font-weight:900}
+.search-wrap{flex:1;max-width:560px;position:relative}
+.search-wrap input{width:100%;padding:13px 44px 13px 17px;border:1px solid #d1d5db;border-radius:12px;outline:none;background:#f9fafb}
+.search-wrap input:focus{border-color:#111827;background:#fff}
+.search-icon{position:absolute;right:15px;top:11px;font-size:20px}
+.nav-actions{display:flex;gap:9px}
+.icon-btn{background:#f3f4f6;padding:11px 13px;border-radius:11px;font-weight:700}
+.cart-btn{background:#111827;color:#fff;padding:12px 16px;border-radius:11px;font-weight:800}
+
+/* Hero */
+.hero{margin:26px auto 18px;border-radius:24px;background:linear-gradient(135deg,#111827,#374151);color:#fff;padding:54px 7%;overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-80px;top:-100px;background:rgba(255,255,255,.08)}
+.hero h1{font-size:clamp(32px,5vw,58px);line-height:1.03;max-width:650px}
+.hero p{margin:15px 0 24px;color:#d1d5db;font-size:17px;max-width:580px}
+.hero button{background:#fff;color:#111827;padding:13px 20px;border-radius:11px;font-weight:800}
+
+/* Categories */
+.categories{display:flex;gap:9px;overflow:auto;padding:12px 0 4px;scrollbar-width:none}
+.categories::-webkit-scrollbar{display:none}
+.cat{padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fff;white-space:nowrap}
+.cat.active,.cat:hover{background:#111827;color:#fff;border-color:#111827}
+
+/* Products */
+.section-head{display:flex;align-items:end;justify-content:space-between;margin:30px 0 16px;gap:15px}
+.section-head h2{font-size:26px}
+.sort{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;overflow:hidden;transition:.2s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.07)}
+.product-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f3f4f6;display:block}
+.card-body{padding:14px}
+.badge{position:absolute;left:10px;top:10px;background:#fff;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:800}
+.category{font-size:12px;color:var(--muted);margin-bottom:5px}
+.name{font-size:16px;font-weight:750;margin-bottom:8px}
+.rating{font-size:13px;margin-bottom:9px}
+.price{font-size:19px;font-weight:850}
+.old{font-size:13px;color:#9ca3af;text-decoration:line-through;margin-left:5px;font-weight:500}
+.add{width:100%;margin-top:12px;background:#111827;color:#fff;padding:11px;border-radius:10px;font-weight:800}
+.add:active{transform:scale(.98)}
+.empty{text-align:center;padding:55px 10px;color:var(--muted);grid-column:1/-1}
+
+/* Features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:45px 0}
+.feature{background:#fff;border:1px solid var(--line);padding:20px;border-radius:15px}
+.feature b{display:block;margin:8px 0 4px}.feature span{color:var(--muted);font-size:14px}
+
+/* Cart drawer */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:50}
+.overlay.show{display:block}
+.cart{position:fixed;right:0;top:0;height:100%;width:min(430px,100%);background:#fff;z-index:60;transform:translateX(100%);transition:.25s;display:flex;flex-direction:column}
+.cart.open{transform:translateX(0)}
+.cart-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.close{background:#f3f4f6;width:36px;height:36px;border-radius:9px;font-size:20px}
+.cart-items{flex:1;overflow:auto;padding:15px}
+.cart-row{display:grid;grid-template-columns:65px 1fr auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cart-row img{width:65px;height:65px;object-fit:cover;border-radius:10px}
+.cart-name{font-weight:750;font-size:14px}
+.qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qty button{width:27px;height:27px;border-radius:7px;background:#f3f4f6}
+.remove{font-size:12px;color:#dc2626;background:none;margin-top:7px}
+.cart-foot{border-top:1px solid var(--line);padding:17px}
+.total{display:flex;justify-content:space-between;font-size:20px;font-weight:850;margin-bottom:13px}
+.checkout{width:100%;padding:13px;border-radius:11px;background:#16a34a;color:#fff;font-weight:850}
+.note{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* Checkout modal */
+.modal-wrap{display:none;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);padding:18px;overflow:auto}
+.modal-wrap.show{display:grid;place-items:center}
+.modal{background:#fff;width:min(560px,100%);border-radius:18px;padding:22px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field.full{grid-column:1/-1}
+.field label{font-size:13px;font-weight:700}
+.field input,.field textarea{padding:12px;border:1px solid #d1d5db;border-radius:10px;outline:none}
+.field textarea{min-height:85px;resize:vertical}
+.place{width:100%;padding:13px;border-radius:10px;background:#111827;color:#fff;font-weight:850}
+
+/* Footer */
+footer{margin-top:55px;background:#111827;color:#d1d5db;padding:38px 0}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}
+footer h3,footer h4{color:#fff;margin-bottom:10px}
+footer p,footer li{font-size:14px;line-height:1.8}
+footer ul{list-style:none}
+.copyright{border-top:1px solid #374151;margin-top:25px;padding-top:18px;font-size:13px;color:#9ca3af}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#111827;color:#fff;padding:12px 17px;border-radius:10px;z-index:100;font-size:14px;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}.search-wrap{max-width:none}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){
+ .topbar{font-size:11px}.nav{height:auto;padding:11px 0;flex-wrap:wrap}.logo{font-size:19px}.logo-mark{width:35px;height:35px}
+ .search-wrap{order:3;flex-basis:100%}.nav-actions .icon-btn{display:none}.cart-btn{padding:10px 12px}
+ .hero{padding:38px 7%;margin-top:16px}.hero p{font-size:14px}
+ .grid{grid-template-columns:repeat(2,1fr);gap:11px}.card-body{padding:11px}.name{font-size:14px}.price{font-size:17px}.add{font-size:13px}
+ .features{grid-template-columns:1fr;margin:32px 0}.feature{padding:16px}.footer-grid{grid-template-columns:1fr}
+ .form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal{padding:17px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">🚚 Easy ordering • WhatsApp support • Cash on Delivery available</div>
+
+<header>
+  <div class="container nav">
+    <a class="logo" href="#">
+      <span class="logo-mark">N</span><span>NovaCart</span>
+    </a>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search products..." oninput="renderProducts()">
+      <span class="search-icon">⌕</span>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="scrollToProducts()">Shop</button>
+      <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>Shop smart.<br>Live better.</h1>
+    <p>Discover quality products at simple prices. Add to cart and place your order directly on WhatsApp.</p>
+    <button onclick="scrollToProducts()">Shop Now →</button>
+  </section>
+
+  <div class="categories" id="categories"></div>
+
+  <section id="shop">
+    <div class="section-head">
+      <div>
+        <h2>Featured Products</h2>
+        <p style="color:#6b7280;font-size:14px;margin-top:4px" id="resultText"></p>
+      </div>
+      <select class="sort" id="sort" onchange="renderProducts()">
+        <option value="default">Sort: Featured</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+        <option value="name">Name: A-Z</option>
+      </select>
+    </div>
+    <div class="grid" id="products"></div>
+  </section>
+
+  <section class="features">
+    <div class="feature"><div style="font-size:25px">🛡️</div><b>Easy & Secure Ordering</b><span>Simple checkout through WhatsApp.</span></div>
+    <div class="feature"><div style="font-size:25px">🚚</div><b>Delivery Support</b><span>Share your address while ordering.</span></div>
+    <div class="feature"><div style="font-size:25px">💬</div><b>Direct Support</b><span>Talk directly with our store on WhatsApp.</span></div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>NovaCart</h3><p>Your simple online shopping destination.</p></div>
+      <div><h4>Quick Links</h4><ul><li><a href="#shop">Shop</a></li><li><a href="#!" onclick="openCart()">Cart</a></li></ul></div>
+      <div><h4>Contact</h4><p>WhatsApp: 8953730111</p><p>Order support available</p></div>
+    </div>
+    <div class="copyright">© 2026 NovaCart. All rights reserved.</div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+<aside class="cart" id="cart">
+  <div class="cart-head"><h2>Your Cart</h2><button class="close" onclick="closeCart()">×</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="total"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="checkout" onclick="openCheckout()">Proceed to Checkout</button>
+    <div class="note">Order details will open in WhatsApp.</div>
+  </div>
+</aside>
+
+<div class="modal-wrap" id="checkoutModal">
+  <div class="modal">
+    <div class="modal-head"><div><h2>Checkout</h2><p style="color:#6b7280;font-size:13px;margin-top:3px">Enter your details to place the order.</p></div><button class="close" onclick="closeCheckout()">×</button></div>
+    <form onsubmit="placeOrder(event)">
+      <div class="form-grid">
+        <div class="field"><label>Full Name *</label><input id="customerName" required placeholder="Your name"></div>
+        <div class="field"><label>Mobile Number *</label><input id="customerPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit number"></div>
+        <div class="field full"><label>Delivery Address *</label><textarea id="customerAddress" required placeholder="House no., village/city, district, PIN"></textarea></div>
+      </div>
+      <button class="place" type="submit">📲 Place Order on WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/*
+  ================= PRODUCT LIST =================
+  Add new products here.
+  Put your product photo inside the GitHub "images" folder and use:
+  image: "images/your-photo.jpg"
+*/
+const products = [
+  {id:1,name:"Premium T-Shirt",category:"Fashion",price:499,oldPrice:699,rating:4.8,image:"images/tshirt.jpg",badge:"Popular"},
+  {id:2,name:"Stylish Shoes",category:"Fashion",price:999,oldPrice:1399,rating:4.7,image:"images/shoes.jpg",badge:"Sale"},
+  {id:3,name:"Classic Watch",category:"Accessories",price:799,oldPrice:1099,rating:4.6,image:"images/watch.jpg",badge:"Popular"},
+  {id:4,name:"Premium Sunglasses",category:"Accessories",price:399,oldPrice:599,rating:4.5,image:"images/sunglasses.jpg",badge:"Sale"},
+  {id:5,name:"Everyday Backpack",category:"Bags",price:699,oldPrice:899,rating:4.7,image:"images/backpack.jpg",badge:"New"},
+  {id:6,name:"Wireless Headphones",category:"Electronics",price:1299,oldPrice:1699,rating:4.6,image:"images/headphones.jpg",badge:"Popular"}
+];
+
+let cartData = JSON.parse(localStorage.getItem("novacart_cart") || "[]");
+let activeCategory = "All";
+const whatsappNumber = "918953730111";
+
+const money = n => "₹" + Number(n).toLocaleString("en-IN");
+
+function saveCart(){localStorage.setItem("novacart_cart",JSON.stringify(cartData));}
+
+function renderCategories(){
+  const cats=["All",...new Set(products.map(p=>p.category))];
+  document.getElementById("categories").innerHTML=cats.map(c =>
+    `<button class="cat ${c===activeCategory?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c}</button>`
+  ).join("");
+}
+function setCategory(c){activeCategory=c;renderCategories();renderProducts();}
+
+function renderProducts(){
+  const q=document.getElementById("search").value.trim().toLowerCase();
+  let list=products.filter(p=>
+    (activeCategory==="All"||p.category===activeCategory) &&
+    (p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q))
+  );
+  const sort=document.getElementById("sort").value;
+  if(sort==="low")list.sort((a,b)=>a.price-b.price);
+  if(sort==="high")list.sort((a,b)=>b.price-a.price);
+  if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById("resultText").textContent=list.length+" product"+(list.length!==1?"s":"")+" found";
+  document.getElementById("products").innerHTML=list.length?list.map(p=>`
+    <article class="card">
+      ${p.badge?`<span class="badge">${p.badge}</span>`:""}
+      <img class="product-img" src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy"
+           onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,${placeholderSvg(escapeHtml(p.name))}'">
+      <div class="card-body">
+        <div class="category">${escapeHtml(p.category)}</div>
+        <div class="name">${escapeHtml(p.name)}</div>
+        <div class="rating">⭐ ${p.rating}</div>
+        <div><span class="price">${money(p.price)}</span> <span class="old">${money(p.oldPrice)}</span></div>
+        <button class="add" onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    </article>`).join(""):`<div class="empty"><div style="font-size:35px">🔎</div><h3>No products found</h3><p>Try another search or category.</p></div>`;
+}
+
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function placeholderSvg(text){
+  return encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="30" fill="#6b7280">${text}</text></svg>`);
+}
+
+function addToCart(id){
+  const item=cartData.find(x=>x.id===id);
+  if(item)item.qty++;
+  else cartData.push({id,qty:1});
+  saveCart();updateCart();toast("Product added to cart ✓");
+}
+function changeQty(id,delta){
+  const item=cartData.find(x=>x.id===id);if(!item)return;
+  item.qty+=delta;if(item.qty<=0)cartData=cartData.filter(x=>x.id!==id);
+  saveCart();updateCart();
+}
+function removeItem(id){cartData=cartData.filter(x=>x.id!==id);saveCart();updateCart();}
+
+function updateCart(){
+  const count=cartData.reduce((s,x)=>s+x.qty,0);
+  const total=cartData.reduce((s,x)=>{const p=products.find(p=>p.id===x.id);return s+(p?p.price*x.qty:0)},0);
+  document.getElementById("cartCount").textContent=count;
+  document.getElementById("cartTotal").textContent=money(total);
+  document.getElementById("cartItems").innerHTML=cartData.length?cartData.map(x=>{
+    const p=products.find(p=>p.id===x.id);if(!p)return "";
+    return `<div class="cart-row">
+      <img src="${p.image}" alt="">
+      <div><div class="cart-name">${escapeHtml(p.name)}</div><div>${money(p.price)}</div>
+      <div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${p.id},1)">+</button></div>
+      <button class="remove" onclick="removeItem(${p.id})">Remove</button></div>
+      <b>${money(p.price*x.qty)}</b>
+    </div>`;
+  }).join(""):`<div class="empty"><div style="font-size:40px">🛒</div><h3>Your cart is empty</h3><p>Add products to continue.</p></div>`;
+}
+
+function openCart(){document.getElementById("cart").classList.add("open");document.getElementById("overlay").classList.add("show");}
+function closeCart(){document.getElementById("cart").classList.remove("open");document.getElementById("overlay").classList.remove("show");}
+function openCheckout(){
+  if(!cartData.length){toast("Your cart is empty");return;}
+  document.getElementById("checkoutModal").classList.add("show");
+}
+function closeCheckout(){document.getElementById("checkoutModal").classList.remove("show");}
+
+function placeOrder(e){
+  e.preventDefault();
+  if(!cartData.length)return;
+  const name=document.getElementById("customerName").value.trim();
+  const phone=document.getElementById("customerPhone").value.trim();
+  const address=document.getElementById("customerAddress").value.trim();
+  let total=0;
+  let lines=cartData.map(x=>{
+    const p=products.find(p=>p.id===x.id);const sub=p.price*x.qty;total+=sub;
+    return `• ${p.name} x ${x.qty} = ${money(sub)}`;
+  }).join("\n");
+  const message=`*New Order - NovaCart*\n\n*Customer:* ${name}\n*Mobile:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${lines}\n\n*Total: ${money(total)}*\n\nPlease confirm my order.`;
+  const url="https://wa.me/"+whatsappNumber+"?text="+encodeURIComponent(message);
+  window.open(url,"_blank");
+  closeCheckout();closeCart();
+  toast("WhatsApp opened — send the message to place your order.");
+}
+
+function toast(msg){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2800);
+}
+function scrollToProducts(){document.getElementById("shop").scrollIntoView({behavior:"smooth"});}
+
+renderCategories();renderProducts();updateCart();
+</script>
+</body>
+</html>
